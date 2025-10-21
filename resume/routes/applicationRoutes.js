@@ -1,5 +1,6 @@
 
 import express from 'express';
+import mongoose from 'mongoose';
 import Application from '../models/ApplicationModel.js';
 import Resume from '../models/ResumeModel.js';
 import Job from '../models/JobModel.js';
