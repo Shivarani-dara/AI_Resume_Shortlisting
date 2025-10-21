@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Upload PDF</title>
+    <style>
+      body { font-family: Arial, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; }
+      form { display: flex; flex-direction: column; gap: 12px; }
+      .result { white-space: pre-wrap; background: #f7f7f7; padding: 12px; border-radius: 6px; }
+    </style>
+  </head>
+  <body>
+    <h1>Upload PDF for Extraction</h1>
+    <form id="uploadForm" action="/api/pdf/upload" method="post" enctype="multipart/form-data">
+      <input type="file" name="file" accept="application/pdf" required />
+      <button type="submit">Upload & Extract</button>
+    </form>
+
+    <h2>Or use server file</h2>
+    <form id="serverForm" action="/api/pdf/upload" method="post">
+      <label>Server file path (absolute or relative to project):</label>
+      <input type="text" name="file" placeholder="/home/user/resume1.pdf or uploads/resumes/foo.pdf" />
+      <button type="submit">Use Server File</button>
+    </form>
+
+    <h2>Result</h2>
+    <div id="result" class="result">No result yet.</div>
+
+    <script>
+      // Intercept the first form (file upload) to show JSON response inline
+      const uploadForm = document.getElementById('uploadForm');
+      const serverForm = document.getElementById('serverForm');
+      const result = document.getElementById('result');
+
+      function renderResponse(obj, status) {
+        // obj may contain { extracted, text, summary } or an error shape
+        if (!obj) {
+          result.innerHTML = `<div style="color:darkred">No response</div>`;
+          return;
+        }
+
+        if (obj.error) {
+          result.innerHTML = `<div style="color:darkred"><strong>Error:</strong> ${obj.error}</div>` +
+            (obj.upstreamError ? `<div><em>Upstream:</em> ${obj.upstreamError}</div>` : '');
+          if (obj.text) {
+            result.innerHTML += `<h3>Extracted text (partial)</h3><pre style="white-space:pre-wrap;max-height:240px;overflow:auto;background:#fff;padding:8px;border-radius:6px">${escapeHtml(obj.text)}</pre>`;
+          }
+          return;
+        }
+
+        const extracted = obj.extracted || {};
+        const name = extracted.name || '—';
+        const email = extracted.email || '—';
+        const phone = extracted.phone || '—';
+        const summarySection = extracted.summarySection || null;
+
+        let html = `
+          <div style="display:flex;gap:12px;align-items:center;">
+            <div style="flex:1">
+              <h2 style="margin:0">${escapeHtml(name)}</h2>
+              <div style="color:#555">${escapeHtml(email)} ${phone!=='—'? ' | ' + escapeHtml(phone): ''}</div>
+            </div>
+            <div style="text-align:right;color:#888">Status: ${status}</div>
+          </div>
+        `;
+
+        if (summarySection) {
+          html += `<h4>Profile</h4><div style="background:#fff;padding:8px;border-radius:6px">${escapeHtml(summarySection)}</div>`;
+        }
+
+        if (obj.summary) {
+          html += `<h4>AI Summary</h4><div style="background:#f0f8ff;padding:8px;border-radius:6px">${escapeHtml(obj.summary)}</div>`;
+        }
+
+        if (obj.text) {
+          html += `<h4>Extracted Text</h4><pre style="white-space:pre-wrap;max-height:320px;overflow:auto;background:#fff;padding:8px;border-radius:6px">${escapeHtml(obj.text)}</pre>`;
+        }
+
+        result.innerHTML = html;
+      }
+
+      function escapeHtml(s){
+        if (!s) return '';
+        return s.replace(/[&<>"']/g, function(c){
+          return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+        });
+      }
+
+      uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        result.textContent = 'Uploading...';
+        const fd = new FormData(uploadForm);
+        try {
+          const res = await fetch(uploadForm.action, { method: 'POST', body: fd });
+          const json = await res.json();
+          renderResponse(json, res.status);
+        } catch (err) {
+          result.textContent = 'Error: ' + err.message;
+        }
+      });
+
+      serverForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        result.textContent = 'Requesting...';
+        const form = new FormData(serverForm);
+        // Send as application/x-www-form-urlencoded
+        const params = new URLSearchParams();
+        for (const [k,v] of form.entries()) { if (v) params.append(k, v); }
+        try {
+          const res = await fetch(serverForm.action + '?' + params.toString(), { method: 'POST' });
+          const json = await res.json();
+          renderResponse(json, res.status);
+        } catch (err) {
+          result.textContent = 'Error: ' + err.message;
+        }
+      });
+    </script>
+  </body>
+</html>

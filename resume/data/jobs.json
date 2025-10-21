@@ -1,0 +1,55 @@
+[
+  {
+    "_id": "68f716347d6bd135ebf0da22",
+    "title": "CodeVerse Technologies Pvt. Ltd.",
+    "description": "Build and maintain scalable web applications using modern technologies. Collaborate with cross-functional teams, participate in design discussions, and ensure code quality",
+    "company": "Google",
+    "location": "Hyderabad, India",
+    "type": "full-time",
+    "salaryMin": 600000,
+    "salaryMax": 1000000,
+    "skills": [],
+    "experience": "entry",
+    "applicationDeadline": "2025-10-21T00:00:00.000Z",
+    "employerId": "68f669e1619534a8bc49541b",
+    "collectionName": "applications_codeverse_technologies_pvt_ltd_1761023540720",
+    "createdAt": "2025-10-21T05:12:20.723Z",
+    "__v": 0
+  },
+  {
+    "_id": "68f683066d5eaf3333c3746e",
+    "title": "Frontend Developer",
+    "description": "Design and implement web interfaces for client applications, optimize performance, and collaborate with backend developers.",
+    "company": "Tech Solutions Pvt Ltd",
+    "location": "Hyderabad, India",
+    "type": "full-time",
+    "salaryMin": 500000,
+    "salaryMax": 800000,
+    "skills": [
+      "HTML, CSS, JavaScript, React.js, Responsive Design"
+    ],
+    "experience": "entry",
+    "applicationDeadline": "2025-10-21T00:00:00.000Z",
+    "employerId": "68f682306d5eaf3333c3746a",
+    "createdAt": "2025-10-20T18:44:22.273Z",
+    "__v": 0
+  },
+  {
+    "_id": "68f679906d5eaf3333c37457",
+    "title": "Software Engineer",
+    "description": "Design, develop, and maintain web applications. Collaborate with cross-functional teams to deliver high-quality software solutions.",
+    "company": "TechNova Solutions",
+    "location": "Hyderabad, Telangana, India",
+    "type": "full-time",
+    "salaryMin": 600000,
+    "salaryMax": 1000000,
+    "skills": [
+      "JavaScript, Node.js, React, SQL, Git"
+    ],
+    "experience": "entry",
+    "applicationDeadline": "2025-10-20T00:00:00.000Z",
+    "employerId": "68f669e1619534a8bc49541b",
+    "createdAt": "2025-10-20T18:04:00.269Z",
+    "__v": 0
+  }
+]

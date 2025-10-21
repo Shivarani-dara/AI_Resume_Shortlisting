@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Telugu Lyric Generator</title>
+</head>
+<body>
+  <h1>🎵 Telugu Lyric Generator</h1>
+
+  <form action="/generate" method="POST">
+    <input type="text" name="prompt" placeholder="Enter a theme or word" required>
+    <button type="submit">Generate Lyric</button>
+  </form>
+
+  <% if (lyric) { %>
+    <h3>Generated Lyric:</h3>
+    <pre><%= lyric %></pre>
+  <% } %>
+</body>
+</html>

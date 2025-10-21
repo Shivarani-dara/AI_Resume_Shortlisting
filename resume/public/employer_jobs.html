@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Employer - Jobs & Rankings</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;max-width:900px;margin:24px auto;padding:0 16px}
+    .job{border:1px solid #eee;padding:12px;border-radius:6px;margin-bottom:10px}
+    .ranking{background:#fafafa;padding:8px;border-radius:6px}
+    .resume{padding:6px;border-bottom:1px solid #eee}
+  </style>
+</head>
+<body>
+  <h1>Jobs & Rankings</h1>
+  <div id="jobs"></div>
+  <script>
+      async function load(){
+      const res = await fetch('/api/jobs');
+      const jobs = await res.json();
+      const jobsEl = document.getElementById('jobs'); jobsEl.innerHTML='';
+      for(const j of jobs){
+        const div = document.createElement('div'); div.className='job';
+        div.innerHTML = `<h3>${j.title}</h3><p>${j.company || 'Company'} - ${j.location || 'Location'}</p><p>${j.description}</p><div><button data-id="${j._id}" class="showRank">Show Top 5 Candidates</button></div><div id="rank-${j._id}" class="ranking" style="display:none"></div>`;
+        jobsEl.appendChild(div);
+      }
+      document.querySelectorAll('.showRank').forEach(b=>b.addEventListener('click', async ()=>{
+        const id=b.dataset.id;
+        const rEl=document.getElementById('rank-'+id); rEl.style.display='block'; rEl.textContent='Loading...';
+        const res = await fetch('/api/rank',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ jobId: id })});
+        const json=await res.json();
+        if (!res.ok) { rEl.textContent='Error: '+JSON.stringify(json); return; }
+        // display top 5 candidates
+        rEl.innerHTML = '<h4>Top 5 Candidates</h4>' + (json.length? json.map((r,idx)=>`<div class="resume"><strong>#${idx+1} ${r.extracted?.name || r.filename}</strong> — Score: ${r.score ?? 'N/A'}<br/>Status: ${r.status}<br/>Applied: ${new Date(r.appliedAt).toLocaleDateString()}<br/>Rationale: ${ (r.rationale||[]).join('; ') }<br/><a href="/api/resumes/${r.resumeId}/download">Download Resume</a></div>`).join('') : '<div>No candidates yet</div>');
+      }));
+    }
+    load();
+  </script>
+</body>
+</html>
